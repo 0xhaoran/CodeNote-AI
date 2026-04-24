@@ -1,6 +1,6 @@
 ---
-last_updated: 2026-04-20 00:52
-current_phase: ChatView loading 可见性完成，准备进入 messages 累积
+last_updated: 2026-04-25 01:10
+current_phase: 代码回顾后准备进入 messages 历史累积
 ---
 
 ## 1. 终极目标 (Project Goal)
@@ -86,14 +86,26 @@ current_phase: ChatView loading 可见性完成，准备进入 messages 累积
 - [x] [2026-04-20] 已完成阶段进度评估：最小前端链路完成，整体项目仍处于早期（后续含真实 AI、流式、历史、鉴权等）
 - [x] [2026-04-20] 已复验 `ChatView` 最新实现，`try/catch/finally + :disabled` 组合稳定通过 `type-check`
 - [x] [2026-04-20] 用户已完成按钮文案状态化（`loading ? "发送中..." : "发送"`）
+- [x] [2026-04-20] 教学约定更新：后续每一步先解释目标与原因，再给单步任务，避免只做不理解
+- [x] [2026-04-24] 已完成“下一阶段整体路线”澄清：明确从最小闭环过渡到上下文消息、后端代理、流式输出、Markdown 笔记与历史记录的实施顺序
+- [x] [2026-04-24] 已补充项目面试表达框架：技术栈、AI亮点、可落地简历描述与结果导向表述
+- [x] [2026-04-24] 已评估外部建议可行性：代码高亮、长列表性能、Vite 构建分析与线上部署均合理；建议按“核心功能优先、展示增强后置”排序执行
+- [x] [2026-04-24] 已确认开发策略：先完成主链（多轮上下文 + 后端代理 + 流式输出 + Markdown笔记），仅在主链稳定后再做高亮/性能/部署等亮点
+- [x] [2026-04-24] 已补充学习执行方式：每个阶段提供可直接检索的视频关键词（中英文），减少“知道方向但不会搜索”的阻塞
+- [x] [2026-04-25] 已回顾当前代码结构：`main.ts` 挂载应用，`App.vue` 挂载 `ChatView`，`ChatView.vue` 管理输入/结果/loading，`request.ts` 模拟异步解释，`chat.ts` 定义消息与请求类型
+- [x] [2026-04-25] 用户已尝试在 `ChatView.vue` 新增 `messages` 状态；当前类型检查报错为 `Message` 需使用 `import type`，且 `messages` 尚未被读取
+- [x] [2026-04-25] 用户已修正 `ChatView.vue` 的类型导入与状态类型：`import type { Message }`、`const messages = ref<Message[]>([])`；当前仅剩 `messages` 未使用报错
 
 ## 3. 当前上下文与关键决策 (Context & Decisions)
 - **核心技术栈**：Vue 3、TypeScript、Vite、Pinia、Markdown 渲染、Fetch Stream、后端代理服务
-- **架构约定**：先做单页最小闭环，再拆组件；状态集中到 Pinia；AI 对话上下文统一维护为 `messages` 数组；流式输出优先使用 `fetch + ReadableStream`；前后端职责分离，AI 请求由后端代理转发；当前教学采用“严格导师模式：一步一验收，不给完整代码”节奏
-- **遗留问题/Bug**：当前仅发送单条 `user` 消息，尚未做 `messages` 历史累积；类型文件目前集中在 `src/chat.ts`，后续可整理到 `src/types/chat.ts`；尚未选定具体 AI 提供方与后端实现方式；尚未实现流式输出与历史上下文管理；尚未接入后端代理
+- **架构约定**：先做单页最小闭环，再拆组件；状态集中到 Pinia；AI 对话上下文统一维护为 `messages` 数组；流式输出优先使用 `fetch + ReadableStream`；前后端职责分离，AI 请求由后端代理转发；功能优先级固定为“主链 > 稳定性 > 亮点展示”；当前教学采用“严格导师模式：每步先讲目标与原因，再一步一验收，不给完整代码”
+- **遗留问题/Bug**：`ChatView.vue` 当前 `npm run type-check` 未通过：`messages` 已声明但尚未在逻辑中使用；当前仅发送单条 `user` 消息，尚未做 `messages` 历史累积；类型文件目前集中在 `src/chat.ts`，后续可整理到 `src/types/chat.ts`；尚未实现后端代理层（API Key 仍无安全托管位置）；尚未实现流式输出与取消机制；尚未接入 Markdown 渲染与结构化笔记模式联动；尚未实现长对话虚拟列表/上下文裁剪策略
 
 ## 4. 下一步行动计划 (Next Steps)
-- [ ] 在 `ChatView.vue` 中新增 `messages` 状态并在发送前追加当前 `user` 消息
-- [ ] 实现同步版 `explainCode` 请求闭环，确保可以从输入到结果展示
-- [ ] 增加后端代理接口，再补充 `messages` 上下文管理与错误处理
-- [ ] 升级为流式输出，并接入 Markdown 渲染与笔记模式
+- [ ] Phase A（主链）: 在 `ChatView.vue` 中新增 `messages` 状态并在发送前追加 `user` 消息
+- [ ] Phase A（主链）: 将 assistant 回复写入 `messages`，完成最小多轮对话链路
+- [ ] Phase A（主链）: 搭建后端代理接口（统一错误码与超时策略），前端改为调用代理
+- [ ] Phase A（主链）: 升级为流式输出（`fetch + ReadableStream + AbortController`）并支持中断生成
+- [ ] Phase A（主链）: 接入 Markdown 渲染与“解释/笔记”双模式输出
+- [ ] Phase B（亮点）: 代码高亮 + 一键复制 + 长对话性能策略（虚拟列表/上下文裁剪）
+- [ ] Phase B（亮点）: 构建体积分析、线上部署与演示入口（链接/二维码）

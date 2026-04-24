@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { explainCode } from "../request";
-
+import type { Message } from "../chat";
 const inputCode = ref("");
 const result = ref("");
 const loading = ref(false);
-
+const messages = ref<Message[]>([]);
 const handleSend = async () => {
   try {
     loading.value = true;
